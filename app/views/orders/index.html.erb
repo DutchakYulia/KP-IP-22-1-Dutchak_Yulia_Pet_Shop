@@ -1,0 +1,26 @@
+<h1>Мої замовлення</h1>
+
+<% if @orders.empty? %>
+  <p>У тебе ще немає замовлень.</p>
+<% else %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Дата</th>
+        <th>Статус</th>
+        <th>Сума</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @orders.each do |o| %>
+        <tr>
+          <td><%= link_to o.id, order_path(o) %></td>
+          <td><%= o.created_at.strftime("%d.%m.%Y %H:%M") %></td>
+          <td><%= o.status %></td>
+          <td><%= number_to_currency(o.total, unit: "₴", format: "%n %u") %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

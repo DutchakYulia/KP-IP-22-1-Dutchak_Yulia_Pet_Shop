@@ -1,0 +1,40 @@
+<h1>Новий товар</h1>
+<%= form_with model: [:admin, @product], local: true do |f| %>
+  <div class="field">
+    <%= f.label :category_id, "Категорія" %>
+    <%= f.collection_select :category_id, Category.order(:name), :id, :name, {}, required: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :title, "Назва" %>
+    <%= f.text_field :title, required: true %>
+    <div class="muted"><%= @product.errors.full_messages_for(:title).join(", ") %></div>
+  </div>
+
+  <div class="field">
+    <%= f.label :description, "Опис" %>
+    <%= f.text_area :description, rows: 6 %>
+  </div>
+
+  <div class="field">
+    <%= f.label :price, "Ціна" %>
+    <%= f.number_field :price, step: 0.01, required: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :stock, "Наявність (шт)" %>
+    <%= f.number_field :stock, min: 0 %>
+  </div>
+
+  <div class="field">
+    <%= f.label :image_url, "URL зображення" %>
+    <%= f.url_field :image_url %>
+  </div>
+
+  <div class="field">
+    <%= f.label :active, "Активний" %>
+    <%= f.check_box :active %>
+  </div>
+
+  <%= f.submit "Зберегти", class: "btn" %>
+<% end %>

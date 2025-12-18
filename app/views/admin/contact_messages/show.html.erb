@@ -1,0 +1,21 @@
+<h1>Звернення #<%= @message.id %></h1>
+
+<p><strong>Ім'я:</strong> <%= @message.name %></p>
+<p><strong>Email:</strong> <%= @message.email %></p>
+<p><strong>Тема:</strong> <%= @message.subject %></p>
+
+<div class="card">
+  <%= simple_format(@message.body) %>
+</div>
+
+<%= form_with model: [:admin, @message], url: admin_contact_message_path(@message), method: :patch, local: true do |f| %>
+  <div class="field">
+    <%= f.label :status, "Статус" %>
+    <%= f.select :status, ContactMessage.statuses.keys.map { |k| [k.humanize, k] } %>
+  </div>
+  <%= f.submit "Оновити", class: "btn btn-sm" %>
+<% end %>
+
+<div class="row">
+  <%= button_to "Видалити", admin_contact_message_path(@message), method: :delete, class: "btn btn-sm", data: { confirm: "Точно?" } %>
+</div>

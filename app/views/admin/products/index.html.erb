@@ -1,0 +1,27 @@
+<h1>Товари</h1>
+<div class="row">
+  <%= link_to "＋ Додати", new_admin_product_path, class: "btn" %>
+</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th><th>Назва</th><th>Категорія</th><th>Ціна</th><th>Наявність</th><th>Активний</th><th>Дії</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @products.each do |p| %>
+      <tr>
+        <td><%= p.id %></td>
+        <td><%= p.title %></td>
+        <td><%= p.category&.name %></td>
+        <td><%= p.price %></td>
+        <td><%= p.stock %></td>
+        <td><%= p.active ? "так" : "ні" %></td>
+        <td class="row">
+          <%= link_to "Редагувати", edit_admin_product_path(p), class: "btn btn-sm" %>
+          <%= button_to "Видалити", admin_product_path(p), method: :delete, class: "btn btn-sm", data: { confirm: "Точно?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

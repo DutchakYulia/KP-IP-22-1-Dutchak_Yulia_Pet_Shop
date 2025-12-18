@@ -1,0 +1,32 @@
+<h1>Замовлення #<%= @order.id %></h1>
+
+<p><strong>Користувач:</strong> <%= @order.user&.email %></p>
+<p><strong>Доставка:</strong> <%= @order.delivery_method %></p>
+<p><strong>Оплата:</strong> <%= @order.payment_method %></p>
+<p><strong>Адреса:</strong><br><%= simple_format(@order.address) %></p>
+
+<%= form_with model: [:admin, @order], url: admin_order_path(@order), method: :patch, local: true do |f| %>
+  <div class="field">
+    <%= f.label :status, "Статус" %>
+    <%= f.select :status, Order.statuses.keys.map { |k| [k.humanize, k] } %>
+  </div>
+  <%= f.submit "Оновити статус", class: "btn btn-sm" %>
+<% end %>
+
+<h3>Позиції</h3>
+<table class="table">
+  <thead>
+    <tr><th>Товар</th><th>Ціна</th><th>К-сть</th></tr>
+  </thead>
+  <tbody>
+    <% @order.order_items.each do |i| %>
+      <tr>
+        <td><%= i.product.title %></td>
+        <td><%= i.price_snapshot %></td>
+        <td><%= i.quantity %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<p class="price">Разом: <%= @order.total %></p>

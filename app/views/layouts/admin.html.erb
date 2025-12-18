@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <title>Адмінка · PetShop Store</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container">
+        <div class="brand"><%= link_to "⚙️ Адмінка", admin_root_path %></div>
+        <nav class="nav">
+          <%= link_to "Товари", admin_products_path %>
+          <%= link_to "Категорії", admin_categories_path %>
+          <%= link_to "Замовлення", admin_orders_path %>
+          <%= link_to "Звернення", admin_contact_messages_path %>
+          <%= link_to "Відгуки", admin_reviews_path %>
+          <%= link_to "На сайт", root_path %>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <% if flash[:notice] %><div class="flash flash-ok"><%= flash[:notice] %></div><% end %>
+      <% if flash[:alert] %><div class="flash flash-bad"><%= flash[:alert] %></div><% end %>
+      <%= yield %>
+    </main>
+  </body>
+</html>

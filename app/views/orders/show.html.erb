@@ -1,0 +1,30 @@
+<h1>Замовлення #<%= @order.id %></h1>
+<p class="muted">Статус: <strong><%= @order.status %></strong></p>
+
+<p><strong>Доставка:</strong> <%= @order.delivery_method %></p>
+<p><strong>Оплата:</strong> <%= @order.payment_method %></p>
+<p><strong>Адреса:</strong><br><%= simple_format(@order.address) %></p>
+
+<h3>Позиції</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Товар</th>
+      <th>Ціна</th>
+      <th>К-сть</th>
+      <th>Сума</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @order.order_items.each do |i| %>
+      <tr>
+        <td><%= i.product.title %></td>
+        <td><%= number_to_currency(i.price_snapshot, unit: "₴", format: "%n %u") %></td>
+        <td><%= i.quantity %></td>
+        <td><%= number_to_currency(i.price_snapshot.to_d * i.quantity.to_i, unit: "₴", format: "%n %u") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<p class="price">Разом: <%= number_to_currency(@order.total, unit: "₴", format: "%n %u") %></p>

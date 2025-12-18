@@ -1,0 +1,22 @@
+<h1>Реєстрація</h1>
+
+<%= form_with model: @user, url: signup_path, method: :post, local: true do |f| %>
+  <div class="field">
+    <%= f.label :email, "Email" %>
+    <%= f.email_field :email, required: true %>
+    <%= @user.errors.full_messages_for(:email).join(", ") %>
+  </div>
+
+  <div class="field">
+    <%= f.label :password, "Пароль" %>
+    <%= f.password_field :password, required: true %>
+    <%= @user.errors.full_messages_for(:password).join(", ") %>
+  </div>
+
+  <div class="field">
+    <%= f.label :password_confirmation, "Повтор пароля" %>
+    <%= f.password_field :password_confirmation, required: true %>
+  </div>
+
+  <%= f.submit "Створити акаунт", class: "btn" %>
+<% end %>

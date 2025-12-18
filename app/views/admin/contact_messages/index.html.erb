@@ -1,0 +1,19 @@
+<h1>Звернення</h1>
+
+<table class="table">
+  <thead>
+    <tr><th>ID</th><th>Ім'я</th><th>Email</th><th>Тема</th><th>Статус</th><th>Дата</th></tr>
+  </thead>
+  <tbody>
+    <% @messages.each do |m| %>
+      <tr>
+        <td><%= link_to m.id, admin_contact_message_path(m) %></td>
+        <td><%= m.name %></td>
+        <td><%= m.email %></td>
+        <td><%= m.subject %></td>
+        <td><%= m.status %></td>
+        <td><%= m.created_at.strftime("%d.%m.%Y %H:%M") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

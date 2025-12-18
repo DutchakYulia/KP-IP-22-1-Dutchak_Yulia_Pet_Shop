@@ -1,0 +1,21 @@
+<h1>Зворотній зв’язок</h1>
+
+<%= form_with model: @message, local: true do |f| %>
+  <div class="field">
+    <%= f.label :name, "Ім’я" %>
+    <%= f.text_field :name, required: true %>
+  </div>
+  <div class="field">
+    <%= f.label :email, "Email" %>
+    <%= f.email_field :email, required: true %>
+  </div>
+  <div class="field">
+    <%= f.label :subject, "Тема" %>
+    <%= f.text_field :subject, required: true %>
+  </div>
+  <div class="field">
+    <%= f.label :body, "Повідомлення" %>
+    <%= f.text_area :body, rows: 6, required: true %>
+  </div>
+  <%= f.submit "Надіслати", class: "btn" %>
+<% end %>

@@ -1,0 +1,176 @@
+<section class="catalog-hero">
+  <div class="hero-left">
+    <p class="eyebrow">Швидкий вибір</p>
+<h1>Усе для улюбленців</h1>
+    <p class="lead">Харчування, догляд та аксесуари для котів, собак, птахів, гризунів і не тільки.</p>
+  </div>
+  <div class="hero-right">
+    <div class="hero-pill">Безкоштовна доставка від 999 ₴</div>
+    <div class="hero-pill soft">Оплата онлайн / при отриманні</div>
+  </div>
+</section>
+
+<% animals = [
+  { key: "dogs",    label: "Собакам" },
+  { key: "cats",    label: "Котам" },
+  { key: "birds",   label: "Птахам" },
+  { key: "rodents", label: "Гризунам" },
+  { key: "fish",    label: "Рибкам" },
+  { key: "other",   label: "Іншим" }
+] %>
+
+<div class="catalog-tabs">
+  <% animals.each do |animal| %>
+    <% animal_categories = (@categories_by_animal[animal[:key]] || []) %>
+    <div class="tab-item">
+      <span><%= animal[:label] %></span>
+      <div class="tab-underline"></div>
+      <div class="mega-panel">
+        <div class="mega-header">
+          <div>
+            <h3><%= animal[:label] %></h3>
+            <p class="muted">Категорії для <%= animal[:label].downcase %></p>
+          </div>
+          <%= link_to "Всі товари", root_path(animal: animal[:key]), class: "btn btn-xs" %>
+        </div>
+        <% if animal_categories.empty? %>
+          <div class="mega-empty muted">Немає категорій</div>
+        <% else %>
+          <div class="mega-pill-grid">
+            <% animal_categories.each do |c| %>
+              <%= link_to c.name, root_path(category_id: c.id, animal: animal[:key]), class: "mega-pill" %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+  <div class="tab-item muted-tab">
+    <span>Бренди</span>
+  </div>
+  <div class="tab-item muted-tab">
+    <span>Акції</span>
+  </div>
+</div>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Усі товари</h2>
+    <% feed_options = [["Вид корму", ""], ["Сухий", "dry"], ["Вологий", "wet"]] %>
+    <% package_options = [["Упаковка", ""], ["Пакет 1 кг", "1kg_bag"], ["Пакет 2 кг", "2kg_bag"], ["Консерва", "can"], ["Пакетик", "pouch"]] %>
+    <% grade_options = [["Клас", ""], ["Стандарт", "standard"], ["Преміум", "premium"], ["Супер преміум", "super_premium"]] %>
+
+    <div class="filters-inline">
+      <%= form_with url: root_path, method: :get, local: true, class: "filter-form" do %>
+        <%= hidden_field_tag :animal, @animal if @animal %>
+        <%= text_field_tag :q, @q, placeholder: "Пошук за назвою", class: "pill-input" %>
+        <%= number_field_tag :min_price, params[:min_price], placeholder: "Ціна від", step: "0.01", class: "pill-input narrow" %>
+        <%= number_field_tag :max_price, params[:max_price], placeholder: "Ціна до", step: "0.01", class: "pill-input narrow" %>
+
+        <%= hidden_field_tag :feed_type, params[:feed_type], id: "feed_type_field" %>
+        <%= hidden_field_tag :package, params[:package], id: "package_field" %>
+        <%= hidden_field_tag :grade, params[:grade], id: "grade_field" %>
+
+        <% current_feed = feed_options.find { |l, v| v == params[:feed_type].to_s }&.first || "Вид корму" %>
+        <% current_package = package_options.find { |l, v| v == params[:package].to_s }&.first || "Упаковка" %>
+        <% current_grade = grade_options.find { |l, v| v == params[:grade].to_s }&.first || "Клас" %>
+
+        <div class="dropdown" data-dropdown data-target="feed_type_field">
+          <button type="button" class="dropdown-btn pill-input select" data-dropdown-button>
+            <span data-dropdown-label><%= current_feed %></span>
+            <span class="dropdown-caret">▾</span>
+          </button>
+          <ul class="dropdown-menu">
+            <% feed_options.each do |label, value| %>
+              <li><button type="button" class="dropdown-option" data-value="<%= value %>"><%= label %></button></li>
+            <% end %>
+          </ul>
+        </div>
+
+        <div class="dropdown" data-dropdown data-target="package_field">
+          <button type="button" class="dropdown-btn pill-input select" data-dropdown-button>
+            <span data-dropdown-label><%= current_package %></span>
+            <span class="dropdown-caret">▾</span>
+          </button>
+          <ul class="dropdown-menu">
+            <% package_options.each do |label, value| %>
+              <li><button type="button" class="dropdown-option" data-value="<%= value %>"><%= label %></button></li>
+            <% end %>
+          </ul>
+        </div>
+
+        <div class="dropdown" data-dropdown data-target="grade_field">
+          <button type="button" class="dropdown-btn pill-input select" data-dropdown-button>
+            <span data-dropdown-label><%= current_grade %></span>
+            <span class="dropdown-caret">▾</span>
+          </button>
+          <ul class="dropdown-menu">
+            <% grade_options.each do |label, value| %>
+              <li><button type="button" class="dropdown-option" data-value="<%= value %>"><%= label %></button></li>
+            <% end %>
+          </ul>
+        </div>
+
+        <%= submit_tag "Знайти", class: "btn btn-sm" %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @products.empty? %>
+    <p>Нічого не знайдено.</p>
+  <% end %>
+
+  <div class="cards alt-grid">
+    <% placeholder = asset_path("placeholder.svg") %>
+    <% @products.each do |p| %>
+      <div class="card product-card">
+        <div class="muted"><%= p.category&.name %></div>
+        <h3><%= link_to p.title, product_path(p) %></h3>
+        <%= image_tag(
+              p.image_url.presence || placeholder,
+              alt: p.title,
+              class: "thumb",
+              loading: "lazy",
+              onerror: "this.onerror=null;this.src='#{placeholder}'"
+            ) %>
+        <div class="row">
+          <div class="price"><%= number_to_currency(p.price, unit: "₴", format: "%n %u") %></div>
+          <div class="muted">В наявності: <%= p.stock.to_i %></div>
+        </div>
+        <div class="row">
+          <%= link_to "Детальніше", product_path(p), class: "btn btn-sm" %>
+          <%= button_to "У кошик", add_cart_path(product_id: p.id), method: :post, class: "btn btn-sm" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const dropdowns = document.querySelectorAll("[data-dropdown]");
+    const closeAll = () => dropdowns.forEach(dd => dd.classList.remove("open"));
+    dropdowns.forEach(dd => {
+      const button = dd.querySelector("[data-dropdown-button]");
+      const label = dd.querySelector("[data-dropdown-label]");
+      const options = dd.querySelectorAll(".dropdown-option");
+      const hidden = document.getElementById(dd.dataset.target);
+      button.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isOpen = dd.classList.contains("open");
+        closeAll();
+        if (!isOpen) dd.classList.add("open");
+      });
+      options.forEach(opt => {
+        opt.addEventListener("click", (e) => {
+          e.preventDefault();
+          const val = opt.dataset.value;
+          hidden.value = val;
+          label.textContent = opt.textContent;
+          dd.classList.remove("open");
+        });
+      });
+    });
+    document.addEventListener("click", closeAll);
+  });
+</script>

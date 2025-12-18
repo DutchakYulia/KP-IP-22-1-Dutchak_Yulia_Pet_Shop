@@ -1,0 +1,24 @@
+<h1>Замовлення</h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Користувач</th>
+      <th>Статус</th>
+      <th>Сума</th>
+      <th>Дата</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @orders.each do |o| %>
+      <tr>
+        <td><%= link_to o.id, admin_order_path(o) %></td>
+        <td><%= o.user&.email %></td>
+        <td><%= o.status %></td>
+        <td><%= o.total %></td>
+        <td><%= o.created_at.strftime("%d.%m.%Y %H:%M") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

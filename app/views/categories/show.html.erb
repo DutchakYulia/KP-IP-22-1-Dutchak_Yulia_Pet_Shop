@@ -1,0 +1,11 @@
+<h1><%= @category.name %></h1>
+
+<div class="cards">
+  <% @products.each do |p| %>
+    <div class="card">
+      <h3><%= link_to p.title, product_path(p) %></h3>
+      <div class="price"><%= number_to_currency(p.price, unit: "₴", format: "%n %u") %></div>
+      <%= button_to "В кошик", add_cart_path(product_id: p.id), method: :post, class: "btn btn-sm" %>
+    </div>
+  <% end %>
+</div>

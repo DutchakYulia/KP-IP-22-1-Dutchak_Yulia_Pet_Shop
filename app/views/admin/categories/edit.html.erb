@@ -1,0 +1,16 @@
+<h1>Редагувати категорію</h1>
+<%= form_with model: [:admin, @category], local: true do |f| %>
+  <div class="field">
+    <%= f.label :name, "Назва" %>
+    <%= f.text_field :name, required: true %>
+  </div>
+  <div class="field">
+    <%= f.label :slug, "Slug (для URL)" %>
+    <%= f.text_field :slug %>
+  </div>
+  <div class="field">
+    <%= f.label :animal, "Для кого" %>
+    <%= f.select :animal, options_for_select([["Собаки","dogs"],["Коти","cats"],["Птахи","birds"],["Гризуни","rodents"],["Рибки","fish"],["Інші","other"]], @category.animal), include_blank: "Не вибрано", required: true %>
+  </div>
+  <%= f.submit "Оновити", class: "btn" %>
+<% end %>

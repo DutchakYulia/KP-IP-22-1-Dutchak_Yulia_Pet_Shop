@@ -1,0 +1,67 @@
+<h1>Оформлення замовлення</h1>
+
+<% total = 0.to_d %>
+<ul class="list">
+  <% current_cart.each do |pid, qty| %>
+    <% p = @products[pid.to_i] %>
+    <% next unless p %>
+    <% line = p.price.to_d * qty.to_i %>
+    <% total += line %>
+    <li><%= p.title %> — <%= qty %> шт · <%= number_to_currency(line, unit: "₴", format: "%n %u") %></li>
+  <% end %>
+</ul>
+
+<p class="price">Разом: <%= number_to_currency(total, unit: "₴", format: "%n %u") %></p>
+
+<% delivery_options = [
+  ["Нова пошта — відділення", "np_branch"],
+  ["Нова пошта — поштомат", "np_locker"],
+  ["Курʼєр", "courier"]
+] %>
+
+<% payment_options = [
+  ["Оплата карткою онлайн", "card_mock"],
+  ["Оплата при отриманні", "cod"]
+] %>
+
+<%= form_with model: @order, url: checkout_path, method: :post, local: true do |f| %>
+  <div class="grid">
+    <section class="card">
+      <h3>Контактні дані</h3>
+
+      <div class="field">
+        <%= f.label :name, "ПІБ" %>
+        <%= f.text_field :name, required: true %>
+      </div>
+
+      <div class="field">
+        <%= f.label :phone, "Телефон" %>
+        <%= f.text_field :phone, required: true %>
+      </div>
+
+      <div class="field">
+        <%= f.label :address, "Адреса / відділення" %>
+        <%= f.text_area :address, rows: 3, required: true %>
+      </div>
+
+      <div class="field">
+        <%= f.label :comment, "Коментар" %>
+        <%= f.text_area :comment, rows: 2 %>
+      </div>
+    </section>
+
+    <aside class="card">
+      <h3>Доставка</h3>
+      <div class="field">
+        <%= f.select :delivery_method, delivery_options, {}, required: true %>
+      </div>
+
+      <h3>Оплата</h3>
+      <div class="field">
+        <%= f.select :payment_method, payment_options, {}, required: true %>
+      </div>
+
+      <%= f.submit "Підтвердити замовлення", class: "btn" %>
+    </aside>
+  </div>
+<% end %>

@@ -1,0 +1,137 @@
+<% placeholder = asset_path("placeholder.svg") %>
+
+<section class="product-hero">
+  <div class="product-gallery">
+    <div class="product-image">
+      <%= image_tag(
+            @product.image_url.presence || placeholder,
+            alt: @product.title,
+            onerror: "this.onerror=null;this.src='#{placeholder}'"
+          ) %>
+    </div>
+  </div>
+
+  <div class="product-info">
+    <p class="eyebrow"><%= @product.category&.name %></p>
+    <h1><%= @product.title %></h1>
+    <div class="muted">Код товару: <%= @product.id %></div>
+
+    <div class="product-price-row">
+      <div class="price-lg"><%= number_to_currency(@product.price, unit: "₴", format: "%n %u") %></div>
+      <div class="stock-pill <%= @product.stock.to_i > 0 ? 'in-stock' : 'out-stock' %>">
+        <%= @product.stock.to_i > 0 ? "В наявності: #{@product.stock.to_i}" : "Немає в наявності" %>
+      </div>
+    </div>
+
+    <div class="product-actions">
+      <%= button_to "Додати до кошика", add_cart_path(product_id: @product.id), method: :post, class: "btn" %>
+      <%= link_to "Повернутися в каталог", root_path, class: "btn btn-ghost" %>
+    </div>
+
+    <div class="product-details-card">
+      <h4>Коротко</h4>
+      <ul class="bullet-list">
+        <li>Категорія: <strong><%= @product.category&.name %></strong></li>
+        <li>Статус: <strong><%= @product.stock.to_i > 0 ? "Є на складі" : "Немає" %></strong></li>
+        <li>Ціна: <strong><%= number_to_currency(@product.price, unit: "₴", format: "%n %u") %></strong></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="product-description card">
+  <h2>Опис</h2>
+  <%= simple_format(@product.description.presence || "Опис буде додано пізніше.") %>
+</section>
+
+<section class="reviews-block card">
+  <div class="section-head">
+    <h2>Відгуки</h2>
+    <div class="muted"><%= @reviews.size %> відгуків</div>
+  </div>
+
+  <% if @reviews.empty? %>
+    <p class="muted">Ще немає відгуків — станьте першим.</p>
+  <% else %>
+    <% @reviews.each do |r| %>
+      <div class="review">
+        <div class="row">
+          <strong><%= r.user.email %></strong>
+          <span class="muted"><%= r.created_at.to_date %></span>
+        </div>
+        <div><%= simple_format(r.body) %></div>
+        <div class="rating-pill">Оцінка: <%= r.rating %>/5</div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <% if logged_in? %>
+    <hr>
+    <h4>Залишити відгук</h4>
+    <%= form_with model: [@product, @review], local: true do |f| %>
+      <div class="field">
+        <%= f.label :rating, "Оцінка (1..5)" %>
+        <%= f.number_field :rating, in: 1..5, required: true %>
+      </div>
+      <div class="field">
+        <%= f.label :body, "Коментар" %>
+        <%= f.text_area :body, rows: 4, required: true %>
+      </div>
+      <%= f.submit "Надіслати відгук", class: "btn btn-sm" %>
+    <% end %>
+  <% else %>
+    <p class="muted">Щоб залишити відгук, <%= link_to "увійдіть", login_path %>.</p>
+  <% end %>
+</section>
+
+<% if @similar_products.any? %>
+  <section class="section-block">
+    <div class="section-head">
+      <h2>Схожі товари</h2>
+      <%= link_to "Усі з цієї категорії", root_path(category_id: @product.category_id), class: "linklike" %>
+    </div>
+    <div class="cards alt-grid">
+      <% @similar_products.each do |p| %>
+        <div class="card product-card">
+          <div class="muted"><%= p.category&.name %></div>
+          <h3><%= link_to p.title, product_path(p) %></h3>
+          <%= image_tag(p.image_url.presence || placeholder, alt: p.title, class: "thumb", onerror: "this.onerror=null;this.src='#{placeholder}'") %>
+          <div class="row">
+            <div class="price"><%= number_to_currency(p.price, unit: "₴", format: "%n %u") %></div>
+            <div class="muted">В наявності: <%= p.stock.to_i %></div>
+          </div>
+          <div class="row">
+            <%= link_to "Детальніше", product_path(p), class: "btn btn-sm" %>
+            <%= button_to "У кошик", add_cart_path(product_id: p.id), method: :post, class: "btn btn-sm" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+<% end %>
+
+<% if @popular_products.any? %>
+  <section class="section-block">
+    <div class="section-head">
+      <h2>Популярні товари</h2>
+      <%= link_to "Дивитися всі", root_path, class: "linklike" %>
+    </div>
+    <div class="cards alt-grid">
+      <% @popular_products.each do |p| %>
+        <div class="card product-card">
+          <div class="muted"><%= p.category&.name %></div>
+          <h3><%= link_to p.title, product_path(p) %></h3>
+          <%= image_tag(p.image_url.presence || placeholder, alt: p.title, class: "thumb", onerror: "this.onerror=null;this.src='#{placeholder}'") %>
+          <div class="row">
+            <div class="price"><%= number_to_currency(p.price, unit: "₴", format: "%n %u") %></div>
+            <div class="muted">В наявності: <%= p.stock.to_i %></div>
+          </div>
+          <div class="row">
+            <%= link_to "Детальніше", product_path(p), class: "btn btn-sm" %>
+            <%= button_to "У кошик", add_cart_path(product_id: p.id), method: :post, class: "btn btn-sm" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+<% end %>

@@ -1,0 +1,104 @@
+<section class="catalog-hero">
+  <div class="hero-left">
+    <p class="eyebrow">Швидкий вибір</p>
+    <h1>Каталог товарів</h1>
+    <p class="lead">Харчування, догляд та аксесуари для котів, собак, птахів, гризунів і не тільки.</p>
+  </div>
+  <div class="hero-right">
+    <div class="hero-pill">Безкоштовна доставка від 999 ₴</div>
+    <div class="hero-pill soft">Оплата онлайн / при отриманні</div>
+  </div>
+</section>
+
+<% animals = [
+  { key: "dogs",    label: "Собакам", icon: "🐶" },
+  { key: "cats",    label: "Котам", icon: "🐱" },
+  { key: "birds",   label: "Птахам", icon: "🐦" },
+  { key: "rodents", label: "Гризунам", icon: "🐹" },
+  { key: "fish",    label: "Рибкам", icon: "🐠" },
+  { key: "other",   label: "Іншим", icon: "✨" }
+] %>
+
+<div class="catalog-tabs">
+  <% animals.each do |animal| %>
+    <% animal_categories = (@categories_by_animal[animal[:key]] || []) %>
+    <div class="tab-item">
+      <span class="tab-icon"><%= animal[:icon] %></span>
+      <span><%= animal[:label] %></span>
+      <div class="tab-underline"></div>
+      <div class="mega-panel">
+        <div class="mega-header">
+          <div>
+            <h3><%= animal[:label] %></h3>
+            <p class="muted">Категорії для <%= animal[:label].downcase %></p>
+          </div>
+          <%= link_to "Всі товари", root_path(animal: animal[:key]), class: "btn btn-xs" %>
+        </div>
+        <div class="mega-columns">
+          <% if animal_categories.empty? %>
+            <div class="mega-col muted">Немає категорій</div>
+          <% else %>
+            <% animal_categories.each_slice(4) do |slice| %>
+              <div class="mega-col">
+                <% slice.each do |c| %>
+                  <%= link_to c.name, root_path(category_id: c.id, animal: animal[:key]), class: "mega-link" %>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+  <div class="tab-item muted-tab">
+    <span class="tab-icon">⭐</span><span>Бренди</span>
+  </div>
+  <div class="tab-item muted-tab">
+    <span class="tab-icon">%</span><span>Акції</span>
+  </div>
+  <div class="tab-item muted-tab">
+    <span class="tab-icon">🔔</span><span>Блог</span>
+  </div>
+</div>
+
+<section class="section-block">
+  <div class="section-head">
+    <h2>Усі товари</h2>
+    <div class="filters-inline">
+      <%= form_with url: root_path, method: :get, local: true, class: "filter-form" do %>
+        <%= hidden_field_tag :animal, @animal if @animal %>
+        <%= text_field_tag :q, @q, placeholder: "Пошук за назвою", class: "pill-input" %>
+        <%= submit_tag "Знайти", class: "btn btn-sm" %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @products.empty? %>
+    <p>Нічого не знайдено.</p>
+  <% end %>
+
+  <div class="cards alt-grid">
+    <% placeholder = asset_path("placeholder.svg") %>
+    <% @products.each do |p| %>
+      <div class="card product-card">
+        <div class="muted"><%= p.category&.name %></div>
+        <h3><%= link_to p.title, product_path(p) %></h3>
+        <%= image_tag(
+              p.image_url.presence || placeholder,
+              alt: p.title,
+              class: "thumb",
+              loading: "lazy",
+              onerror: "this.onerror=null;this.src='#{placeholder}'"
+            ) %>
+        <div class="row">
+          <div class="price"><%= number_to_currency(p.price, unit: "₴", format: "%n %u") %></div>
+          <div class="muted">В наявності: <%= p.stock.to_i %></div>
+        </div>
+        <div class="row">
+          <%= link_to "Детальніше", product_path(p), class: "btn btn-sm" %>
+          <%= button_to "У кошик", add_cart_path(product_id: p.id), method: :post, class: "btn btn-sm" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>
